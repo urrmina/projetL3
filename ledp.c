@@ -1,30 +1,33 @@
-#include <stdio.h>
-#include "contiki.h"
-#include "dev/leds.h"
+#include <stdio.h> 
+#include "contiki.h" /*system file, always included*/
+#include "dev/leds.h"/*leds driver*/
+#include "dev/button-sensor.h" /*user button driver*/
 
 /* test with skymote LEDs*/
+/* A quick program that blinks LEDs*/
 
-/*Creating a timer, etimer is event time*/
-static struct etimer blinktimer;
+static struct etimer blinktimer; /* creating a timer */
 
 static uint8_t blinks; /*a date type that have 8bit variables*/
 
-PROCESS(blink_process, "LED BLINK PROCESS"); /*a contiki process */
-AUTOSTART_PROCESSES(&blink_process);
+PROCESS(blink_process, "LED BLINK PROCESS"); 
+AUTOSTART_PROCESSES(&blink_process); /* Load process at boot*/
  
- PROCESS_THREAD(blink_process,ev,data) /*ev is event time*/
+ PROCESS_THREAD(blink_process, ev, data) /*ev is event time*/
  {
- PROCESS_BEGIN();
- blinks=0;
- while(1)
- {
- etimer_set(&blinktimer, CLOCK_SECOND);
- /* CLOCK_SECOND generates 1 to 10 ms timing signals according to the motes */
- PROCESS_WAIT_EVENT_UNTIL(ev==PROCESS_EVENT_TIMER);
- leds_off(LEDS_ALL);
- leds_on(blinks & LEDS_ALL);
- blinks++;
- printf("State of LED %02X \n", leds_get());
+  PROCESS_EXITHANDLER(goto exit); // for when another process already exists.
+  PROCESS_BEGIN();
+ //blinks=0;
+ while(1) {
+  	etimer_set(&blinktimer, CLOCK_SECOND);
+  	PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&blinktimer));
+  	leds_on(blinks & LEDS_ALL);
+  	etimer_set(&blinktimer, CLOCK_SECOND);
+  	PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&blinktimer));
+  	leds_off(LEDS_ALL);
  }
+ 
+ exit;
+ leds_off(LEDS_ALL);
  PROCESS_END();
  }
