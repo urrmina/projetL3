@@ -1,19 +1,55 @@
- #include "contiki.h"
- #include <stdio.h>
- #include "dev/leds.h"
- #include "dev/button-sensor.h"
- PROCESS(led_process,"LED_PROCESS");
- AUTOSTART_PROCESSES(&led_process);
- PROCESS_THREAD(led_process,ev,data)
- {
- PROCESS_BEGIN();
- SENSORS_ACTIVATE(button_sensor);
- while(1)
- {
- printf("Press the button of the sensor");
- PROCESS_WAIT_EVENT_UNTIL(ev=sensors_event && data==&button_sensor);
- leds_toggle(LEDS_GREEN);
- }
- printf("The sensor valus ls %u \n", leds_get());
- PROCESS_END();
- }
+#include <stdio.h> 
+#include "contiki.h" /*system file, always included*/
+#include "dev/leds.h"/*leds driver*/
+#include "dev/button-sensor.h" /*user button driver*/
+
+PROCESS(blink_timer_process, "blink with timer example");
+AUTOSTART_PROCESSES(&blink_timer_process);
+
+PROCESS_THREAD(blink_timer_process, ev, data)
+{   
+  PROCESS_EXITHANDLER(goto exit); /*In case another process already exists*/
+  PROCESS_BEGIN();
+ 
+  /* Initializing stuff here */ 
+	SENSORS_ACTIVATE(button_sensor);
+	leds_off(LEDS_ALL);
+	printf("All leds are off\n");   
+	printf("Press the user button to start\n");
+	/* For the lights to function */
+	leds_toggle(LEDS_RED);
+	leds_off(LEDS_ALL);
+
+ 
+    while(1) {
+	static uint32_t ticks = 0;
+	static uint32_t seconds = 5;
+	static struct etimer et; // creating a timer
+ 
+	PROCESS_WAIT_EVENT();
+ 
+	if(ev == sensors_event) {  // If the event it's provoked by the user button, then...
+           if(data == &button_sensor) {		
+		etimer_set(&et, CLOCK_SECOND*seconds);  // Set the timer
+		printf("Timer started\n");
+           }
+        }
+ 
+	if(etimer_expired(&et)) {  // If the event it's provoked by the timer expiration, then...
+		leds_toggle(LEDS_BLUE);
+		if (ticks % 2 == 0) {
+			printf("LED BLUE .............. [ON]\n");
+			leds_on(LEDS_GREEN);
+                }
+		else { 
+			printf("LED BLUE ............. [OFF]\n");
+			leds_off(LEDS_RED);
+                }
+		etimer_reset(&et);
+		ticks++;
+                }	
+	}		
+	exit:
+		leds_off(LEDS_ALL);
+		PROCESS_END();
+}
