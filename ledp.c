@@ -12,12 +12,13 @@ PROCESS_THREAD(blink_timer_process, ev, data)
   PROCESS_BEGIN();
  
   /* Initializing stuff here */ 
-	SENSORS_ACTIVATE(button_sensor);
+	SENSORS_ACTIVATE(button_sensor); // activate the button sensor
+	button_sensor::value(0); // the button has been pressed or not
 	leds_off(LEDS_ALL);
 	printf("All leds are off\n");   
 	printf("Press the user button to start\n");
 	/* For the lights to function */
-	leds_toggle(LEDS_RED);
+	leds_toggle(LEDS_RED); //keeps lights red when they turn
 	leds_off(LEDS_ALL);
 
  
@@ -28,27 +29,29 @@ PROCESS_THREAD(blink_timer_process, ev, data)
  
 	PROCESS_WAIT_EVENT();
  
-	if(ev == sensors_event) {  // If the event it's provoked by the user button, then...
+	if(ev == sensors_event) {  // If the event is provoked by the user button, then...
            if(data == &button_sensor) {		
 		etimer_set(&et, CLOCK_SECOND*seconds);  // Set the timer
-		printf("Timer started\n");
+		printf("#########\n######### Timer started #########\n#########\n");
            }
         }
- 
+ 	
+ 	// to make the leds blink after pressing the button
 	if(etimer_expired(&et)) {  // If the event it's provoked by the timer expiration, then...
-		leds_toggle(LEDS_BLUE);
+		leds_toggle(LEDS_BLUE); // to switch between ON & OFF for the active button (BLUE)
 		if (ticks % 2 == 0) {
-			printf("LED BLUE .............. [ON]\n");
+			printf("LED BLUE [ON]\n");
 			leds_on(LEDS_GREEN);
                 }
 		else { 
-			printf("LED BLUE ............. [OFF]\n");
-			leds_off(LEDS_RED);
+			printf("LED BLUE [OFF]\n");
+			leds_toggle(LEDS_RED);
                 }
 		etimer_reset(&et);
 		ticks++;
                 }	
-	}		
+	}
+	// the timer will sychronize all button to turn on & off together		
 	exit:
 		leds_off(LEDS_ALL);
 		PROCESS_END();
