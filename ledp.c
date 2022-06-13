@@ -13,7 +13,6 @@ PROCESS_THREAD(blink_timer_process, ev, data)
  
   /* Initializing stuff here */ 
 	SENSORS_ACTIVATE(button_sensor); // activate the button sensor
-	button_sensor::value(0); // the button has been pressed or not
 	leds_off(LEDS_ALL);
 	printf("All leds are off\n");   
 	printf("Press the user button to start\n");
