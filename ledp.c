@@ -32,20 +32,26 @@ PROCESS_THREAD(blink_timer_process, ev, data)
            if(data == &button_sensor) {		
 		etimer_set(&et, CLOCK_SECOND*seconds);  // Set the timer
 		printf("#########\n######### Timer started #########\n#########\n");
+		printf("Pending\n");
+		 leds_on(LEDS_BLUE);
            }
         }
+        printf("The sensor valus ls %u \n", leds_get());
  	
  	// to make the leds blink after pressing the button
 	if(etimer_expired(&et)) {  // If the event it's provoked by the timer expiration, then...
-		leds_toggle(LEDS_BLUE); // to switch between ON & OFF for the active button (BLUE)
+		
 		if (ticks % 2 == 0) {
-			printf("LED BLUE [ON]\n");
+			printf("LED  [ON]\n");
 			leds_on(LEDS_GREEN);
+			leds_off(LEDS_RED);
                 }
-		else { 
-			printf("LED BLUE [OFF]\n");
-			leds_toggle(LEDS_RED);
+		else {
+			printf("LED  [OFF]\n");
+			leds_off(LEDS_GREEN);
+			leds_on(LEDS_RED);
                 }
+            
 		etimer_reset(&et);
 		ticks++;
                 }	
