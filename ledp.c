@@ -32,11 +32,11 @@ PROCESS_THREAD(blink_timer_process, ev, data)
  		// to make the leds blink after pressing the button
 		if(etimer_expired(&et)) {
 			if (ticks % 2 == 0) {
-				printf("LED [ON]\n");
+				printf("LED RED BLINK [ON]\n");
 				leds_on(LEDS_GREEN);
 		        }
 			else { 
-				printf("LED [OFF]\n");
+				printf("LED RED BLINK [OFF]\n");
 				leds_toggle(LEDS_RED);
 		        }
 			etimer_reset(&et);
