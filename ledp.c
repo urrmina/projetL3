@@ -47,6 +47,8 @@ PROCESS_THREAD(blink_timer_process, ev, data) //Pointer to process, event number
 		leds_off(LEDS_RED);
 		leds_off(LEDS_GREEN);
 		ticks = 0;
+		printf("All leds are off\n");   
+		printf("Press the user button to start again\n");
 	}
 	}
   exit:
