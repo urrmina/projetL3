@@ -26,7 +26,7 @@ PROCESS_THREAD(blink_timer_process, ev, data)
  	if(ticks < 2310) { //the led will e on for approximatly one minute
 		if (ev == sensors_event && data == &button_sensor) {
 			   etimer_set(&et, CLOCK_SECOND*5);		
-			   printf("	Timer started 		\n");
+			   printf("		Timer started 		\n");
 		}
 
  		// to make the leds blink after pressing the button
