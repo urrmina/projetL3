@@ -24,7 +24,7 @@ PROCESS_THREAD(blink_timer_process, ev, data) //Pointer to process, event number
 	
 	PROCESS_WAIT_EVENT(); //An event must arrive from a sensor and that sensor should be the user button
 	
- 	if(ticks < 2000) { //the led will be on for approximatly five minute 11550 (1min = 2310ticks)
+ 	if(ticks < 11550) { //the led will be on for approximatly five minute (1min = 2310ticks)
 		if (ev == sensors_event && data == &button_sensor) {
 			   etimer_set(&et, CLOCK_SECOND*5);		
 			   printf("		Timer started 		\n");
